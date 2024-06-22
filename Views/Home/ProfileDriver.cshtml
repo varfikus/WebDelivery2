@@ -1,0 +1,90 @@
+﻿@model WebDelivery.Models.Driver
+
+@{
+    ViewData["Title"] = "Driver Profile";
+    var orders = ViewBag.Orders as List<WebDelivery.Models.Order>;
+    var addresses = ViewBag.Addresses as List<WebDelivery.Models.Address>;
+    var customers = ViewBag.Customers as List<WebDelivery.Models.Customer>;
+}
+
+<div class="profile-header">
+    <h2>@Model.Firstname @Model.Lastname</h2>
+    <p class ="profile-info"><strong>Email:</strong> @Model.Email</p>
+    <p class="profile-info"><strong>Телефон:</strong> @Model.Phonenumber</p>
+    <p class="profile-info"><strong>Номер:</strong> @Model.Licensenumber</p>
+    <p class="profile-info"><strong>Создан:</strong> @Model.Createdat</p>
+</div>
+
+
+<h1>Заказы</h1>
+<table class="table orders-table">
+    <thead>
+        <tr>
+            <th>Имя заказчика</th>
+            <th>Адрес подбора</th>
+            <th>Адрес доставки</th>
+            <th>Дата заказа</th>
+            <th>Описание</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (orders != null && addresses != null)
+        {
+            @foreach (var order in orders)
+            {
+                <tr>
+                    @foreach (var customer in customers)
+                    {
+                        if (customer.Customerid == order.Customerid)
+                        {
+                            <td>@customer.Firstname @customer.Lastname</td>
+                        }
+                    }
+                    @foreach (var address in addresses)
+                    {
+                        if (address.Addressid == order.Pickupaddressid)
+                        {
+                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
+                        }
+                    }
+                    @foreach (var address in addresses)
+                    {
+                        if (address.Addressid == order.Deliveryaddressid)
+                        {
+                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
+                        }
+                    }
+                    <td>@order.Orderdate?.ToString()</td>
+                    <td>@order.Description?.ToString()</td>
+                    <td>
+                        @if (order.Status == "Pending")
+                        {
+                            <form asp-action="TakeOrder" method="post">
+                                <input type="hidden" name="id" value="@order.Orderid" />
+                                <input type="hidden" name="driverId" value="@Model.Driverid" />
+                                <button type="submit" class="btn btn-primary">Взять заказ</button>
+                            </form>
+                        }
+                        else if (order.Status == "In Transit")
+                        {
+                            <form asp-action="TakeOrder" method="post">
+                                <input type="hidden" name="id" value="@order.Orderid" />
+                                <input type="hidden" name="driverId" value="@Model.Driverid" />
+                                <button type="submit" class="btn btn-primary">Заказ привезен</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p>Ждите заказчика</p>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="8">Заказы не найдены</td></tr>
+        }
+    </tbody>
+</table>

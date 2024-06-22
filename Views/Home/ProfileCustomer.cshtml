@@ -1,0 +1,100 @@
+﻿@model WebDelivery2.Models.Customer
+@{
+    ViewData["Title"] = "ProfileCustomer";
+    var orders = ViewBag.Orders as List<WebDelivery2.Models.Order>;
+    var addresses = ViewBag.Addresses as List<WebDelivery2.Models.Address>;
+    var drivers = ViewBag.Drivers as List<WebDelivery2.Models.Driver>;
+}
+
+<div class="profile-header">
+    <h1>@Model.Firstname @Model.Lastname</h1>
+    <p class="profile-info"><strong>Email:</strong> @Model.Email</p>
+    <p class="profile-info"><strong>Телефон:</strong> @Model.Phone</p>
+    <div>
+        @Html.ActionLink("Создать заказ", "CreateOrder", "Order", new { customerid = Model.Id }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+<h2>Список заказов</h2>
+<table class="table orders-table">
+    <thead>
+        <tr>
+            <th>Адрес сбора</th>
+            <th>Адрес доставки</th>
+            <th>Дата заказа</th>
+            <th>Статус</th>
+            <th>Описание</th>
+            <th>Водитель</th>
+            <th>Принять заказ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (orders != null && addresses != null)
+        {
+            @foreach (var order in orders)
+            {
+                @if (order.Id == Model.Id)
+                {
+                <tr>
+                    @foreach (var address in addresses)
+                    {
+                        if (address.Id == order.PickupaddressId)
+                        {
+                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
+                        }
+                    }
+                    @foreach (var address in addresses)
+                    {
+                        if (address.Id == order.DeliveryaddressId)
+                        {
+                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
+                        }
+                    }
+                    <td>@order.Date.ToString()</td>
+                        @if (order.Status == OrderStatus.pending)
+                        {
+                            <td>Отправлен</td>
+                        }
+                        else if (order.Status == OrderStatus.intransit)
+                        {
+                            <td>Принят</td>
+                        }else if (order.Status == OrderStatus.delivered)
+                        {
+                            <td>Доставлен</td>
+                        }
+                    <td>@order.Description?.ToString()</td>
+                        @foreach (var driver in drivers)
+                        {
+                            @if (driver.Id == order.Id)
+                            {
+                                <td>@driver.Firstname @driver.Lastname</td>
+                            }
+                            else
+                            {
+                                <td>Не принят</td>
+                            }
+                        }
+                        <td>
+                        @if (order.Status == OrderStatus.delivered)
+                        {
+                            <form asp-action="AcceptOrder" method="post">
+                                <input type="hidden" name="id" value="@order.Id" />
+                                <input type="hidden" name="customerId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-primary">Принять заказ</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p>Дождитесь вашего заказа</p>
+                        }
+                    </td>
+                </tr>
+                }
+            }
+        }
+        else
+        {
+            <tr><td colspan="8">Заказов нет</td></tr>
+        }
+    </tbody>
+</table>

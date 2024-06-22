@@ -1,0 +1,186 @@
+﻿@model WebDelivery2.Models.User
+
+@{
+    ViewBag.Title = "Index";
+}
+<div class="auth-container">
+    <p>
+        <span id="btnLogin" class="log-type-btn active" onclick="toggleLogType('Login')">Вход</span>
+        <span id="btnReg" class="log-type-btn" onclick="toggleLogType('Reg')">Регистрация</span>
+        <input type="hidden" name="LogType" id="LogType" value="Login" />
+    </p>
+    <div id="loginFields" class="form-section">
+        <form method="post" action="/Home/Login">
+            <p>
+                <label>Email:</label><br />
+                <input type="email" name="Email" id="LoginEmail" required />
+            </p>
+            <p>
+                <label>Пароль:</label><br />
+                <input type="password" name="Password" id="LoginPassword" required />
+            </p>
+            <p>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </p>
+            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <div id="error-popup" class="popup">
+                    <span class="close-btn" onclick="closePopup()">&times;</span>
+                    <p id="error-message">@ViewBag.ErrorMessage</p>
+                </div>
+            }
+        </form>
+    </div>
+    <form method="post" action="/Home/Index" id="registrationFields" class="form-section">
+        <div class="form-container">
+            <div>
+                <p>
+                    <label>Тип пользователя:</label><br />
+                    <span id="btnCustomer" class="user-type-btn active" onclick="toggleUserType('Customer')">Заказчик</span>
+                    <span id="btnDriver" class="user-type-btn" onclick="toggleUserType('Driver')">Водитель</span>
+                    <input type="hidden" name="UserType" id="UserType" value="Customer" />
+                </p>
+                <p>
+                    <label>Имя:</label><br />
+                    <input type="text" name="Firstname" id="Firstname" />
+                </p>
+                <p>
+                    <label>Фамилия:</label><br />
+                    <input type="text" name="Lastname" id="Lastname" />
+                </p>
+                <p>
+                    <label>Email:</label><br />
+                    <input type="email" name="Email" id="Email" />
+                </p>
+                <p>
+                    <label>Пароль:</label><br />
+                    <input type="password" name="Password" id="RegPassword" />
+                </p>
+                <p>
+                    <label>Телефон:</label><br />
+                    <input type="text" name="Phone" id="Phone" />
+                </p>
+                <div id="driverFields" style="display:none;">
+                    <p>
+                        <label>Номер:</label><br />
+                        <input type="text" name="LicenseNumber" id="LicenseNumber" />
+                    </p>
+                </div>
+            </div>
+            <div id="customerFields">
+                <p>
+                    <label>Страна:</label><br />
+                    <input type="text" name="Country" id="Country" />
+                </p>
+                <p>
+                    <label>Город:</label><br />
+                    <input type="text" name="City" id="City" />
+                </p>
+                <p>
+                    <label>Улица:</label><br />
+                    <input type="text" name="Street" id="Street" />
+                </p>
+                <p>
+                    <label>Дом:</label><br />
+                    <input type="text" name="House" id="House" />
+                </p>
+            </div>
+        </div>
+        <p>
+            <button type="submit" class="btn btn-primary">Зарегестрироваться</button>
+        </p>
+    </form>
+</div>
+
+<script>
+    function toggleUserType(userType) {
+        document.getElementById("btnCustomer").classList.remove("active");
+        document.getElementById("btnDriver").classList.remove("active");
+
+        document.getElementById("btn" + userType).classList.add("active");
+
+        document.getElementById("UserType").value = userType;
+
+        var driverFields = document.getElementById("driverFields");
+        var customerFields = document.getElementById("customerFields");
+        if (userType === "Driver") {
+            driverFields.style.display = "block";
+            customerFields.style.display = "none";
+            document.getElementById("LicenseNumber").required = true;
+            document.getElementById("RegPassword").required = true;
+            document.getElementById("City").required = false;
+            document.getElementById("Street").required = false;
+            document.getElementById("House").required = false;
+            document.getElementById("Country").required = false;
+        } else {
+            driverFields.style.display = "none";
+            customerFields.style.display = "block";
+            document.getElementById("LicenseNumber").required = false;
+            document.getElementById("RegPassword").required = true;
+            document.getElementById("City").required = true;
+            document.getElementById("Street").required = true;
+            document.getElementById("House").required = true;
+            document.getElementById("Country").required = true;
+        }
+    }
+
+    function toggleLogType(logType) {
+        document.getElementById("btnLogin").classList.remove("active");
+        document.getElementById("btnReg").classList.remove("active");
+
+        document.getElementById("btn" + logType).classList.add("active");
+        document.getElementById("LogType").value = logType;
+
+        var loginFields = document.getElementById("loginFields");
+        var regFields = document.getElementById("registrationFields");
+        if (logType === "Login") {
+            loginFields.style.display = "block";
+            regFields.style.display = "none";
+            document.getElementById("LoginEmail").required = true;
+            document.getElementById("LoginPassword").required = true;
+            document.getElementById("RegPassword").required = false;
+            document.getElementById("Firstname").required = false;
+            document.getElementById("Lastname").required = false;
+            document.getElementById("Email").required = false;
+            document.getElementById("Phone").required = false;
+            document.getElementById("Country").required = false;
+            document.getElementById("City").required = false;
+            document.getElementById("Street").required = false;
+            document.getElementById("House").required = false;
+            document.getElementById("Postcode").required = false;
+        } else {
+            loginFields.style.display = "none";
+            regFields.style.display = "block";
+            document.getElementById("LoginEmail").required = false;
+            document.getElementById("LoginPassword").required = false;
+            document.getElementById("RegPassword").required = true;
+            document.getElementById("Firstname").required = true;
+            document.getElementById("Lastname").required = true;
+            document.getElementById("Email").required = true;
+            document.getElementById("Phone").required = true;
+            document.getElementById("Country").required = true;
+            document.getElementById("City").required = true;
+            document.getElementById("Street").required = true;
+            document.getElementById("House").required = true;
+            document.getElementById("Postcode").required = true;
+        }
+    }
+
+    window.onload = function () {
+        toggleLogType('Login');
+        toggleUserType('Customer');
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("error-popup");
+        popup.style.display = "none";
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <text>
+            document.getElementById("error-popup").style.display = "block";
+            setTimeout(closePopup, 3000); 
+        </text>
+    }
+</script>
