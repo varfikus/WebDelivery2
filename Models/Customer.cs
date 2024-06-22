@@ -22,16 +22,4 @@ public partial class Customer
     public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-
-    public static Customer CreateCustomer(User model)
-    {
-        return new Customer
-        {
-            Firstname = model.Firstname,
-            Lastname = model.Lastname,
-            Email = model.Email,
-            Phone = model.Phone,
-            Password = model.Password
-        };
-    }
 }

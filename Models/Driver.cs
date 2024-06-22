@@ -24,17 +24,4 @@ public partial class Driver
     public decimal Rating { get; set; }
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-
-    public static Driver CreateDriver(User model)
-    {
-        return new Driver
-        {
-            Firstname = model.Firstname,
-            Lastname = model.Lastname,
-            Email = model.Email,
-            Phone = model.Phone,
-            Licensenumber = model.LicenseNumber,
-            Password = model.Password
-        };
-    }
 }

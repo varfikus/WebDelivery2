@@ -1,0 +1,138 @@
+﻿@model WebDelivery2.Models.Order
+@{
+    ViewData["Title"] = "Create Order";
+    var drivers = ViewBag.Drivers as List<WebDelivery2.Models.Driver>;
+    var customerId = ViewBag.CustomerId;
+    var orders = ViewBag.Orders as List<WebDelivery2.Models.Order>;
+    var addresses = ViewBag.Addresses as List<WebDelivery2.Models.Address>;
+}
+
+<h2>Создать заказ</h2>
+<form method="post" action="@Url.Action("CreateOrder", "Order")" class="order-form">
+    <input type="hidden" name="CustomerId" value="@customerId" />
+    <input type="hidden" name="Price" id="Price" />
+    <div class="form-section">
+        <label>Тип доставки:</label><br />
+        <span id="btnTo" class="delivery-type-btn active" onclick="toggleDeliveryType('To')">Вам</span>
+        <span id="btnFrom" class="delivery-type-btn" onclick="toggleDeliveryType('From')">От вас</span>
+        <input type="hidden" name="DeliveryType" id="DeliveryType" value="To" />
+
+        <p>
+            <label>Описание:</label><br />
+            <input type="text" name="Description" id="Description" />
+        </p>
+
+        <div id="addressFields">
+            <p>
+                <label>Страна:</label><br />
+                <input type="text" name="Country" id="Country" required onchange="calculatePrice()" />
+            </p>
+            <p>
+                <label>Город:</label><br />
+                <input type="text" name="City" id="City" required onchange="calculatePrice()" />
+            </p>
+            <p>
+                <label>Улица:</label><br />
+                <input type="text" name="Street" id="Street" required onchange="calculatePrice()" />
+            </p>
+            <p>
+                <label>Дом:</label><br />
+                <input type="text" name="House" id="House" required onchange="calculatePrice()" />
+            </p>
+        </div>
+    </div>
+    <div>
+        <p>Цена: <span id="price">0</span> руб</p>
+    </div>
+    <button id="submitBtn" type="submit" class="btn btn-primary">Сделать заказ</button>
+</form>
+
+<script>
+    function toggleDeliveryType(deliveryType) {
+        document.getElementById("btnTo").classList.remove("active");
+        document.getElementById("btnFrom").classList.remove("active");
+
+        document.getElementById("btn" + deliveryType).classList.add("active");
+
+        document.getElementById("DeliveryType").value = deliveryType;
+
+        if (deliveryType === "To") {
+            document.getElementById("Country").placeholder = "Страна доставки";
+            document.getElementById("City").placeholder = "Город доставки";
+            document.getElementById("Street").placeholder = "Улица доставки";
+            document.getElementById("House").placeholder = "Дом доставки";
+        } else {
+            document.getElementById("Country").placeholder = "Страна отправления";
+            document.getElementById("City").placeholder = "Город отправления";
+            document.getElementById("Street").placeholder = "Улица отправления";
+            document.getElementById("House").placeholder = "Дом отправления";
+        }
+    }
+
+    function areAllFieldsFilled() {
+        var country = document.getElementById("Country").value;
+        var city = document.getElementById("City").value;
+        var street = document.getElementById("Street").value;
+        var house = document.getElementById("House").value;
+
+        return country && city && street && house;
+    }
+
+    async function calculatePrice() {
+        if (areAllFieldsFilled()) {
+            var element = document.getElementById('price');
+            var submitBtn = document.getElementById('submitBtn');
+
+            var country = document.getElementById("Country").value;
+            var city = document.getElementById("City").value;
+            var street = document.getElementById("Street").value;
+            var customerId = document.querySelector('input[name="CustomerId"]').value;
+
+            console.log(`Country: ${country}, City: ${city}, Street: ${street}, CustomerId: ${customerId}`);
+
+            try {
+                const response = await fetch(`/Order/CalculatePrice?country=${country}&city=${city}&street=${street}&customerId=${customerId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log('Price data:', data);
+                element.textContent = `${data.price}`;
+                document.getElementById('Price').value = data.price;
+                submitBtn.style.display = 'inline-block';
+            } catch (error) {
+                console.error('Error fetching price:', error);
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleDeliveryType('To');
+    });
+</script>
+@* // function count() {
+    //     var element = document.getElementById('price');
+    //     var submitBtn = document.getElementById('submitBtn');
+
+    //
+    //     var country = document.getElementById("Country").value;
+    //     var address = addresses.FirstOrDefault(a => a.CustomerId == customerId);
+    //     if (address.Country != country)
+    //     {
+    //         order.Price = 200;
+    //     }
+    //     else if (order.Pickupaddress.City != order.Deliveryaddress.City)
+    //     {
+    //         order.Price = 100;
+    //     }
+    //     else if (order.Pickupaddress.Street != order.Deliveryaddress.Street)
+    //     {
+    //         order.Price = 50;
+    //     }
+    //     else
+    //     {
+    //         order.Price = 20;
+    //     }
+    //     }
+    //     submitBtn.style.display = 'inline-block';
+    // } *@

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using WebDelivery2.Models;
-using static WebDelivery2.Models.@enum;
 
 namespace WebDelivery2;
 
@@ -30,10 +29,6 @@ public partial class DeliveryContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresEnum<OrderStatus>("order_status");
-
-        modelBuilder.HasPostgresEnum("order_status", ["pending", "intransit", "delivered"]);
-
         modelBuilder.Entity<Address>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("addresses_pkey");
@@ -149,9 +144,8 @@ public partial class DeliveryContext : DbContext
                 .HasColumnName("price");
             entity.Property(e => e.Status)
                 .HasColumnName("status")
-                .HasConversion(
-                    v => v.ToString(),
-                    v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v));
+                .HasColumnType("text");
+
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.CustomerId)

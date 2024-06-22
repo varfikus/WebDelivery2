@@ -31,10 +31,8 @@
     <tbody>
         @if (orders != null && addresses != null)
         {
-            @foreach (var order in orders)
+            @foreach (var order in orders.Where(o => o.CustomerId == Model.Id))
             {
-                @if (order.Id == Model.Id)
-                {
                 <tr>
                     @foreach (var address in addresses)
                     {
@@ -51,30 +49,33 @@
                         }
                     }
                     <td>@order.Date.ToString()</td>
-                        @if (order.Status == OrderStatus.pending)
-                        {
-                            <td>Отправлен</td>
-                        }
-                        else if (order.Status == OrderStatus.intransit)
-                        {
-                            <td>Принят</td>
-                        }else if (order.Status == OrderStatus.delivered)
-                        {
-                            <td>Доставлен</td>
-                        }
+                    @if (order.Status == OrderStatus.pending)
+                    {
+                        <td>Отправлен</td>
+                    }
+                    else if (order.Status == OrderStatus.intransit)
+                    {
+                        <td>Принят</td>
+                    }
+                    else if (order.Status == OrderStatus.delivered)
+                    {
+                        <td>Доставлен</td>
+                    }
                     <td>@order.Description?.ToString()</td>
-                        @foreach (var driver in drivers)
-                        {
-                            @if (driver.Id == order.Id)
+                    <td>
+                        @{
+                            var driver = drivers.FirstOrDefault(d => d.Id == order.DriverId);
+                            if (driver != null)
                             {
-                                <td>@driver.Firstname @driver.Lastname</td>
+                                <span>@driver.Firstname @driver.Lastname</span>
                             }
                             else
                             {
-                                <td>Не принят</td>
+                                <span>Не принят</span>
                             }
                         }
-                        <td>
+                    </td>
+                    <td>
                         @if (order.Status == OrderStatus.delivered)
                         {
                             <form asp-action="AcceptOrder" method="post">
@@ -89,7 +90,6 @@
                         }
                     </td>
                 </tr>
-                }
             }
         }
         else

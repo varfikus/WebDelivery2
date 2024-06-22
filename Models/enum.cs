@@ -1,9 +1,9 @@
 ﻿namespace WebDelivery2.Models
 {
-        public enum OrderStatus
-        {
-            pending,
-            intransit,
-            delivered
-        }
+    public static class OrderStatus
+    {
+        public const string pending = "pending";
+        public const string intransit = "intransit";
+        public const string delivered = "delivered";
+    }
 }
