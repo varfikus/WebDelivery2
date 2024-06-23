@@ -77,6 +77,13 @@ namespace WebDelivery2.Extensions
                 var order = context.Orders.FirstOrDefault(o => o.CustomerId == customerId && o.Id == id && o.Status == OrderStatus.delivered);
                 if (order != null)
                 {
+                    var customer = context.Customers.FirstOrDefault(c => c.Id == customerId);
+                    var driver = context.Drivers.FirstOrDefault(d => d.Id == order.DriverId);
+                    decimal amount = order.Price;
+
+                    customer.Money -= amount;
+                    driver.Money += amount / 2;
+
                     context.Orders.Remove(order);
                     context.SaveChanges();
                 }

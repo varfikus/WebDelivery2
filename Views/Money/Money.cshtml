@@ -1,0 +1,18 @@
+﻿@model WebDelivery2.Models.Customer
+
+@{
+    ViewData["Title"] = "Balance";
+    var customerId = ViewBag.CustomerId;
+}
+
+<h2>Пополнить счет</h2>
+<form method="post" action="@Url.Action("AddMoney", "Money")" class="order-form">
+    <input type="hidden" name="CustomerId" value="@customerId" />
+    <div class="form-section">
+        <p>
+            <label for="Money">Сумма пополнения:</label><br />
+            <input type="number" name="Money" id="Money" min="0" step="0.01" class="form-control" placeholder="Введите сумму" required />
+        </p>
+    </div>
+    <button id="submitBtn" type="submit" class="btn btn-primary">Пополнить</button>
+</form>

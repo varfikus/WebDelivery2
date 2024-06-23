@@ -298,3 +298,59 @@ button {
     button:hover {
         background-color: #45a049;
     }
+.btn-primary[disabled] {
+    color: #fff;
+    background-color: #6c757d; 
+    border-color: #6c757d; 
+    cursor: not-allowed;
+}
+.rating-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .rating-form h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .rating-form .form-group {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .rating-form label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 18px;
+        color: #555;
+    }
+
+    .rating-form button {
+        margin: 0 5px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+        border-radius: 50%;
+        border: none;
+        color: #fff;
+        background-color: #e67e22;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .rating-form button:hover {
+            background-color: #d35400;
+        }
+
+        .rating-form button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.5);
+        }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDelivery2", "WebDelivery2.csproj", "{D30315DF-CC10-4673-8A2F-36064C0D2D85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDelivery2", "WebDelivery2.csproj", "{D30315DF-CC10-4673-8A2F-36064C0D2D85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

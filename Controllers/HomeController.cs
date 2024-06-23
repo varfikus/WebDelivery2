@@ -16,7 +16,6 @@ namespace WebDelivery2.Controllers
             _logger = logger;
         }
 
-        // Default GET request for Index
         [HttpGet]
         public IActionResult Index()
         {
@@ -35,7 +34,6 @@ namespace WebDelivery2.Controllers
             return View();
         }
 
-        // POST request to register a user
         [HttpPost]
         public IActionResult Register(User model)
         {
@@ -64,7 +62,6 @@ namespace WebDelivery2.Controllers
             }
         }
 
-        // POST request to login a user
         [HttpPost]
         public IActionResult Login(User model)
         {
@@ -123,7 +120,7 @@ namespace WebDelivery2.Controllers
                 return View("ProfileDriver", driver);
             }
         }
-
+        
         [HttpPost]
         public IActionResult TakeOrder(int id, int driverId)
         {
@@ -135,22 +132,92 @@ namespace WebDelivery2.Controllers
         [HttpPost]
         public IActionResult AcceptOrder(int id, int customerId)
         {
-            OrderExtensions.AcceptOrder(id, customerId);
+            using (DeliveryContext context = new DeliveryContext())
+            {
+                var order = context.Orders.FirstOrDefault(o => o.Id == id);
+                if (order != null)
+                {
+                    var driverid = order.DriverId;
+                    var customerid = customerId;
+                    OrderExtensions.AcceptOrder(id, customerId);
+                    return RedirectToAction("DriverRating", new { driverId = driverid, customerId = customerid });
+                }
+                else
+                {
+                    return NotFound("Order not found.");
+                }
+            }
+        }
 
-            return RedirectToAction("ProfileCustomer", new { id = customerId });
+        [HttpGet]
+        public IActionResult DriverRating(int driverId, int customerId)
+        {
+            using (DeliveryContext context = new DeliveryContext())
+            {
+                var driver = context.Drivers.FirstOrDefault(d => d.Id == driverId);
+                if (driver != null)
+                {
+                    ViewBag.CustomerId = customerId;
+                    return View(driver);
+                }
+                else
+                {
+                    return NotFound("Driver not found.");
+                }
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SubmitRating(int driverId, decimal rating, int customerId)
+        {
+            using (DeliveryContext context = new DeliveryContext())
+            {
+                var driver = context.Drivers.FirstOrDefault(d => d.Id == driverId);
+                if (driver == null)
+                {
+                    return BadRequest("Invalid DriverId. Driver does not exist.");
+                }
+
+                driver.Rating = (driver.Rating + rating) / 2;
+                context.SaveChanges();
+
+                return RedirectToAction("ProfileCustomer", "Home", new { id = customerId });
+            }
         }
 
         public IActionResult CreateOrder(int customerId)
         {
             using (DeliveryContext context = new DeliveryContext())
             {
+                var customer = context.Customers.FirstOrDefault(c => c.Id == customerId);
+                if (customer == null)
+                {
+                    return NotFound("Customer not found.");
+                }
+
+                if (customer.Money < 0)
+                {
+                    LoadViewData(context);
+                    return View("ProfileCustomer", customer);
+                }
+
                 ViewBag.CustomerId = customerId;
 
-                var drivers = context.Drivers.ToList();
-                ViewBag.Drivers = drivers;
+                var driversList = context.Drivers.ToList();
+                ViewBag.Drivers = driversList;
 
                 var addresses = context.Addresses.ToList();
                 ViewBag.Addresses = addresses;
+
+                return View();
+            }
+        }
+
+        public IActionResult Money(int customerId)
+        {
+            using (DeliveryContext context = new DeliveryContext())
+            {
+                ViewBag.CustomerId = customerId;
             }
 
             return View();

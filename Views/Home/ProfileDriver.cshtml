@@ -9,6 +9,7 @@
 
 <div class="profile-header">
     <h2>@Model.Firstname @Model.Lastname</h2>
+    <p class="profile-info"><strong>Баланс:</strong> @Model.Money руб.</p>
     <p class ="profile-info"><strong>Email:</strong> @Model.Email</p>
     <p class="profile-info"><strong>Телефон:</strong> @Model.Phone</p>
     <p class="profile-info"><strong>Номер:</strong> @Model.Licensenumber</p>
@@ -24,6 +25,7 @@
             <th>Адрес доставки</th>
             <th>Дата заказа</th>
             <th>Описание</th>
+            <th>Оплата</th>
             <th>Действия</th>
         </tr>
     </thead>
@@ -56,6 +58,7 @@
                     }
                     <td>@order.Date.ToString()</td>
                     <td>@order.Description?.ToString()</td>
+                    <td>@(order.Price / 2) руб.</td>
                     <td>
                         @if (order.Status == OrderStatus.pending)
                         {

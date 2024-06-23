@@ -8,12 +8,31 @@
 
 <div class="profile-header">
     <h1>@Model.Firstname @Model.Lastname</h1>
+    <p class="profile-info"><strong>Баланс:</strong> @Model.Money руб.</p>
     <p class="profile-info"><strong>Email:</strong> @Model.Email</p>
     <p class="profile-info"><strong>Телефон:</strong> @Model.Phone</p>
     <div>
-        @Html.ActionLink("Создать заказ", "CreateOrder", "Order", new { customerid = Model.Id }, new { @class = "btn btn-primary" })
+        @if (Model.Money < 0)
+        {
+            <button class="btn btn-primary" disabled>Создать заказ</button>
+        }
+        else
+        {
+            @Html.ActionLink("Создать заказ", "CreateOrder", "Order", new { customerid = Model.Id }, new { @class = "btn btn-primary" })
+        }
+        @Html.ActionLink("Пополнить баланс", "Money", "Money", new { customerid = Model.Id }, new { @class = "btn btn-primary" })
     </div>
 </div>
+
+<script>
+    var disabledButton = document.querySelector('button[disabled]');
+    if (disabledButton) {
+        disabledButton.addEventListener('click', function (event) {
+            event.preventDefault(); 
+            showAlert(); 
+        });
+    }
+</script>
 
 <h2>Список заказов</h2>
 <table class="table orders-table">
@@ -24,6 +43,7 @@
             <th>Дата заказа</th>
             <th>Статус</th>
             <th>Описание</th>
+            <th>Цена</th>
             <th>Водитель</th>
             <th>Принять заказ</th>
         </tr>
@@ -62,6 +82,7 @@
                         <td>Доставлен</td>
                     }
                     <td>@order.Description?.ToString()</td>
+                    <td>@order.Price.ToString() руб.</td>
                     <td>
                         @{
                             var driver = drivers.FirstOrDefault(d => d.Id == order.DriverId);

@@ -1,0 +1,21 @@
+﻿@model WebDelivery2.Models.Driver
+@{
+    ViewBag.Title = "Rating";
+}
+<div class="rating-form">
+    <h2>Rate the Driver</h2>
+    <form asp-action="SubmitRating" method="post">
+        <input type="hidden" asp-for="Id" name="driverId" />
+        <input type="hidden" name="customerId" value="@ViewBag.CustomerId" />
+        <div class="form-group">
+            <label for="Rating">Rating (1 to 5):</label>
+            <div>
+                <button type="submit" name="rating" value="1" class="btn">1</button>
+                <button type="submit" name="rating" value="2" class="btn">2</button>
+                <button type="submit" name="rating" value="3" class="btn">3</button>
+                <button type="submit" name="rating" value="4" class="btn">4</button>
+                <button type="submit" name="rating" value="5" class="btn">5</button>
+            </div>
+        </div>
+    </form>
+</div>

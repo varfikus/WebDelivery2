@@ -36,14 +36,28 @@ namespace WebDelivery2.Controllers
         {
             using (DeliveryContext context = new DeliveryContext())
             {
-                var drivers = context.Drivers.ToList();
+                var customer = context.Customers.FirstOrDefault(c => c.Id == customerid);
+                if (customer == null)
+                {
+                    return NotFound("Customer not found.");
+                }
+
+                if (customer.Money < 0)
+                {
+                    LoadViewData(context);
+                    return RedirectToAction("ProfileCustomer", "Home", new { id = customerid });
+                }
+
                 ViewBag.CustomerId = customerid;
+
+                var drivers = context.Drivers.ToList();
                 ViewBag.Drivers = drivers;
+
                 var addresses = context.Addresses.ToList();
                 ViewBag.Addresses = addresses;
-            }
 
-            return View();
+                return View();
+            }
         }
 
         [HttpPost]
@@ -98,6 +112,21 @@ namespace WebDelivery2.Controllers
 
                 return Json(new { price = price });
             }
+        }
+
+        private void LoadViewData(DeliveryContext context)
+        {
+            var addresses = context.Addresses.ToList();
+            ViewBag.Addresses = addresses;
+
+            var orders = context.Orders.ToList();
+            ViewBag.Orders = orders;
+
+            var drivers = context.Drivers.ToList();
+            ViewBag.Drivers = drivers;
+
+            var customers = context.Customers.ToList();
+            ViewBag.Customers = customers;
         }
     }
 }
