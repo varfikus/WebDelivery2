@@ -17,76 +17,129 @@
 
 
 <h1>Заказы</h1>
-<table class="table orders-table">
-    <thead>
-        <tr>
-            <th>Имя заказчика</th>
-            <th>Адрес подбора</th>
-            <th>Адрес доставки</th>
-            <th>Дата заказа</th>
-            <th>Описание</th>
-            <th>Оплата</th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (orders != null && addresses != null)
-        {
-            @foreach (var order in orders)
+<div class="table-responsive">
+    <table class="table orders-table">
+        <thead>
+            <tr>
+                <th>Имя заказчика</th>
+                <th>Адрес подбора</th>
+                <th>Адрес доставки</th>
+                <th>Дата заказа</th>
+                <th>Описание</th>
+                <th>Оплата</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (orders != null && addresses != null)
             {
-                <tr>
-                    @foreach (var customer in customers)
-                    {
-                        if (customer.Id == order.CustomerId)
+                @foreach (var order in orders.Where(o => o.DriverId == Model.Id))
+                {
+                    <tr>
+                        @foreach (var customer in customers)
                         {
-                            <td>@customer.Firstname @customer.Lastname</td>
+                            if (customer.Id == order.CustomerId)
+                            {
+                                <td data-label="Имя заказчика">@customer.Firstname @customer.Lastname</td>
+                            }
                         }
-                    }
-                    @foreach (var address in addresses)
-                    {
-                        if (address.Id == order.PickupaddressId)
+                        @foreach (var address in addresses)
                         {
-                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
+                            if (address.Id == order.PickupaddressId)
+                            {
+                                <td data-label="Адрес подбора">@address.Country, @address.City, @address.Street, @address.House</td>
+                            }
                         }
-                    }
-                    @foreach (var address in addresses)
-                    {
-                        if (address.Id == order.DeliveryaddressId)
+                        @foreach (var address in addresses)
                         {
-                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
+                            if (address.Id == order.DeliveryaddressId)
+                            {
+                                <td data-label="Адрес доставки">@address.Country, @address.City, @address.Street, @address.House</td>
+                            }
                         }
-                    }
-                    <td>@order.Date.ToString()</td>
-                    <td>@order.Description?.ToString()</td>
-                    <td>@(order.Price / 2) руб.</td>
-                    <td>
-                        @if (order.Status == OrderStatus.pending)
+                        <td data-label="Дата заказа">@order.Date.ToString()</td>
+                        <td data-label="Описание">@order.Description?.ToString()</td>
+                        <td data-label="Оплата">@((order.Price / 2).ToString()) руб.</td>
+                        <td data-label="Действия">
+                            @if (order.Status == OrderStatus.pending)
+                            {
+                                <form asp-action="TakeOrder" method="post">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <input type="hidden" name="driverId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Взять заказ</button>
+                                </form>
+                            }
+                            else if (order.Status == OrderStatus.intransit)
+                            {
+                                <form asp-action="TakeOrder" method="post">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <input type="hidden" name="driverId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Заказ привезен</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <p>Ждите заказчика</p>
+                            }
+                        </td>
+                    </tr>
+                }
+                @foreach (var order in orders.Where(o => o.DriverId != Model.Id))
+                {
+                    <tr>
+                        @foreach (var customer in customers)
                         {
-                            <form asp-action="TakeOrder" method="post">
-                                <input type="hidden" name="id" value="@order.Id" />
-                                <input type="hidden" name="driverId" value="@Model.Id" />
-                                <button type="submit" class="btn btn-primary">Взять заказ</button>
-                            </form>
+                            if (customer.Id == order.CustomerId)
+                            {
+                                <td data-label="Имя заказчика">@customer.Firstname @customer.Lastname</td>
+                            }
                         }
-                        else if (order.Status == OrderStatus.intransit)
+                        @foreach (var address in addresses)
                         {
-                            <form asp-action="TakeOrder" method="post">
-                                <input type="hidden" name="id" value="@order.Id" />
-                                <input type="hidden" name="driverId" value="@Model.Id" />
-                                <button type="submit" class="btn btn-primary">Заказ привезен</button>
-                            </form>
+                            if (address.Id == order.PickupaddressId)
+                            {
+                                <td data-label="Адрес подбора">@address.Country, @address.City, @address.Street, @address.House</td>
+                            }
                         }
-                        else
+                        @foreach (var address in addresses)
                         {
-                            <p>Ждите заказчика</p>
+                            if (address.Id == order.DeliveryaddressId)
+                            {
+                                <td data-label="Адрес доставки">@address.Country, @address.City, @address.Street, @address.House</td>
+                            }
                         }
-                    </td>
-                </tr>
+                        <td data-label="Дата заказа">@order.Date.ToString()</td>
+                        <td data-label="Описание">@order.Description?.ToString()</td>
+                        <td data-label="Оплата">@((order.Price / 2).ToString()) руб.</td>
+                        <td data-label="Действия">
+                            @if (order.Status == OrderStatus.pending)
+                            {
+                                <form asp-action="TakeOrder" method="post">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <input type="hidden" name="driverId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Взять заказ</button>
+                                </form>
+                            }
+                            else if (order.Status == OrderStatus.intransit)
+                            {
+                                <form asp-action="TakeOrder" method="post">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <input type="hidden" name="driverId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Заказ привезен</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <p>Ждите заказчика</p>
+                            }
+                        </td>
+                    </tr>
+                }
             }
-        }
-        else
-        {
-            <tr><td colspan="8">Заказы не найдены</td></tr>
-        }
-    </tbody>
-</table>
+            else
+            {
+                <tr><td colspan="7">Заказы не найдены</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

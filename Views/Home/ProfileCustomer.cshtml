@@ -35,87 +35,136 @@
 </script>
 
 <h2>Список заказов</h2>
-<table class="table orders-table">
-    <thead>
-        <tr>
-            <th>Адрес сбора</th>
-            <th>Адрес доставки</th>
-            <th>Дата заказа</th>
-            <th>Статус</th>
-            <th>Описание</th>
-            <th>Цена</th>
-            <th>Водитель</th>
-            <th>Принять заказ</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (orders != null && addresses != null)
-        {
-            @foreach (var order in orders.Where(o => o.CustomerId == Model.Id))
+<div class="table-responsive">
+    <table class="table orders-table">
+        <thead>
+            <tr>
+                <th>Адрес сбора</th>
+                <th>Адрес доставки</th>
+                <th>Дата заказа</th>
+                <th>Статус</th>
+                <th>Описание</th>
+                <th>Цена</th>
+                <th>Водитель</th>
+                <th>Принять заказ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (orders != null && addresses != null)
             {
-                <tr>
-                    @foreach (var address in addresses)
-                    {
-                        if (address.Id == order.PickupaddressId)
+                @foreach (var order in orders.Where(o => o.CustomerId == Model.Id && o.Status == OrderStatus.delivered))
+                {
+                    <tr>
+                        @foreach (var address in addresses)
                         {
-                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
-                        }
-                    }
-                    @foreach (var address in addresses)
-                    {
-                        if (address.Id == order.DeliveryaddressId)
-                        {
-                            <td>@address.Country, @address.City, @address.Street, @address.House</td>
-                        }
-                    }
-                    <td>@order.Date.ToString()</td>
-                    @if (order.Status == OrderStatus.pending)
-                    {
-                        <td>Отправлен</td>
-                    }
-                    else if (order.Status == OrderStatus.intransit)
-                    {
-                        <td>Принят</td>
-                    }
-                    else if (order.Status == OrderStatus.delivered)
-                    {
-                        <td>Доставлен</td>
-                    }
-                    <td>@order.Description?.ToString()</td>
-                    <td>@order.Price.ToString() руб.</td>
-                    <td>
-                        @{
-                            var driver = drivers.FirstOrDefault(d => d.Id == order.DriverId);
-                            if (driver != null)
+                            if (address.Id == order.PickupaddressId)
                             {
-                                <span>@driver.Firstname @driver.Lastname</span>
+                                <td data-label="Адрес сбора">@address.Country, @address.City, @address.Street, @address.House</td>
+                            }
+                        }
+                        @foreach (var address in addresses)
+                        {
+                            if (address.Id == order.DeliveryaddressId)
+                            {
+                                <td data-label="Адрес доставки">@address.Country, @address.City, @address.Street, @address.House</td>
+                            }
+                        }
+                        <td data-label="Дата заказа">@order.Date.ToString()</td>
+                        <td data-label="Статус">Доставлен</td>
+                        <td data-label="Описание">@order.Description?.ToString()</td>
+                        <td data-label="Цена">@order.Price.ToString() руб.</td>
+                        <td data-label="Водитель">
+                            @{
+                                var driver = drivers.FirstOrDefault(d => d.Id == order.DriverId);
+                                if (driver != null)
+                                {
+                                    <span>@driver.Firstname @driver.Lastname</span>
+                                }
+                                else
+                                {
+                                    <span>Не принят</span>
+                                }
+                            }
+                        </td>
+                        <td data-label="Принять заказ">
+                            @if (order.Status == OrderStatus.delivered)
+                            {
+                                <form asp-action="AcceptOrder" method="post">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <input type="hidden" name="customerId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Принять заказ</button>
+                                </form>
                             }
                             else
                             {
-                                <span>Не принят</span>
+                                <p>Дождитесь вашего заказа</p>
+                            }
+                        </td>
+                    </tr>
+                }
+                @foreach (var order in orders.Where(o => o.CustomerId == Model.Id && o.Status != OrderStatus.delivered))
+                {
+                    <tr>
+                        @foreach (var address in addresses)
+                        {
+                            if (address.Id == order.PickupaddressId)
+                            {
+                                <td data-label="Адрес сбора">@address.Country, @address.City, @address.Street, @address.House</td>
                             }
                         }
-                    </td>
-                    <td>
-                        @if (order.Status == OrderStatus.delivered)
+                        @foreach (var address in addresses)
                         {
-                            <form asp-action="AcceptOrder" method="post">
-                                <input type="hidden" name="id" value="@order.Id" />
-                                <input type="hidden" name="customerId" value="@Model.Id" />
-                                <button type="submit" class="btn btn-primary">Принять заказ</button>
-                            </form>
+                            if (address.Id == order.DeliveryaddressId)
+                            {
+                                <td data-label="Адрес доставки">@address.Country, @address.City, @address.Street, @address.House</td>
+                            }
                         }
-                        else
+                        <td data-label="Дата заказа">@order.Date.ToString()</td>
+                        @if (order.Status == OrderStatus.pending)
                         {
-                            <p>Дождитесь вашего заказа</p>
+                            <td data-label="Статус">Отправлен</td>
                         }
-                    </td>
-                </tr>
+                        else if (order.Status == OrderStatus.intransit)
+                        {
+                            <td data-label="Статус">Принят</td>
+                        }
+                        <td data-label="Описание">@order.Description?.ToString()</td>
+                        <td data-label="Цена">@order.Price.ToString() руб.</td>
+                        <td data-label="Водитель">
+                            @{
+                                var driver = drivers.FirstOrDefault(d => d.Id == order.DriverId);
+                                if (driver != null)
+                                {
+                                    <span>@driver.Firstname @driver.Lastname</span>
+                                }
+                                else
+                                {
+                                    <span>Не принят</span>
+                                }
+                            }
+                        </td>
+                        <td data-label="Принять заказ">
+                            @if (order.Status == OrderStatus.delivered)
+                            {
+                                <form asp-action="AcceptOrder" method="post">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <input type="hidden" name="customerId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Принять заказ</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <p>Дождитесь вашего заказа</p>
+                            }
+                        </td>
+                    </tr>
+                }
             }
-        }
-        else
-        {
-            <tr><td colspan="8">Заказов нет</td></tr>
-        }
-    </tbody>
-</table>
+            else
+            {
+                <tr><td colspan="8">Заказов нет</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+

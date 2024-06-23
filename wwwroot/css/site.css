@@ -165,6 +165,7 @@ button[type="submit"] {
     .btn-primary:hover {
         background-color: #d35400;
     }
+
 /* Ensure the HTML and body take up full height */
 html, body {
     height: 100%;
@@ -298,12 +299,14 @@ button {
     button:hover {
         background-color: #45a049;
     }
+
 .btn-primary[disabled] {
     color: #fff;
-    background-color: #6c757d; 
-    border-color: #6c757d; 
+    background-color: #6c757d;
+    border-color: #6c757d;
     cursor: not-allowed;
 }
+
 .rating-form {
     max-width: 400px;
     margin: 0 auto;
@@ -354,3 +357,73 @@ button {
             outline: none;
             box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.5);
         }
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .profile-header, .order-form .form-section, .auth-container, .rating-form {
+        padding: 15px;
+    }
+
+    .profile-info, .table th, .table td, .orders-table .btn-primary {
+        padding: 8px;
+    }
+
+    .delivery-type-btn, .user-type-btn, .log-type-btn, .btn, .btn-primary, button {
+        padding: 8px 16px;
+    }
+
+        input[type="text"], input[type="email"], input[type="password"], button[type="submit"] {
+            padding: 8px;
+        }
+
+    .form-section, .login-container, .popup, .rating-form {
+        width: 90%;
+        margin: 10px auto;
+    }
+
+    .footer {
+        padding: 15px 0;
+    }
+
+    .table {
+
+        display: block;
+        width: 90vw;
+    }
+
+        .table thead {
+
+            display: none;
+        }
+
+        .table tr {
+            background-color: #fff;
+            display: block;
+            margin-bottom: 15px;
+            width: 90vw;
+        }
+
+        .table td {
+            background-color: #fff;
+            display: block;
+            text-align: right;
+            padding-left: 40vw;
+            position: relative;
+            border: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+            .table td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 40vw;
+                padding-right: 10px;
+                text-align: left;
+                font-weight: bold;
+            }
+
+            .table td:last-child {
+                border-bottom: 0;
+            }
+}
