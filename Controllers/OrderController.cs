@@ -61,7 +61,7 @@ namespace WebDelivery2.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateOrder(Order model, int CustomerId, string DeliveryType, string city, string street, string postcode, string country, string house, decimal price)
+        public IActionResult CreateOrder(Order model, int CustomerId, string DeliveryType, string city, string street, string postcode, string country, string house, decimal price, float weight)
         {
                 using (DeliveryContext context = new DeliveryContext())
                 {
@@ -79,18 +79,18 @@ namespace WebDelivery2.Controllers
                         House = house,
                     };
 
-                    OrderExtensions.CreateOrder(model, CustomerId, DeliveryType, addressModel, price);
+                    OrderExtensions.CreateOrder(model, CustomerId, DeliveryType, addressModel, price, weight);
 
                     return RedirectToAction("ProfileCustomer", "Home", new { id = CustomerId });
                 }
         }
 
         [HttpGet]
-        public IActionResult CalculatePrice(string country, string city, string street, int customerId)
+        public IActionResult CalculatePrice(string country, string city, string street, float weight, int customerId)
         {
             using (DeliveryContext context = new DeliveryContext())
             {
-                int price = 20; 
+                float price = 20 * weight; 
 
                 var address = context.Addresses.FirstOrDefault(a => a.CustomerId == customerId);
 
@@ -98,15 +98,15 @@ namespace WebDelivery2.Controllers
                 {
                     if (address.Country != country)
                     {
-                        price = 200;
+                        price *= 10;
                     }
                     else if (address.City != city)
                     {
-                        price = 100;
+                        price *= 5;
                     }
                     else if (address.Street != street)
                     {
-                        price = 50;
+                        price *= 2;
                     }
                 }
 

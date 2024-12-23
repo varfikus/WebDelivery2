@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "ProfileCustomer";
+    var orders = ViewBag.Orders as List<WebDelivery2.Models.Order>;
+    var addresses = ViewBag.Addresses as List<WebDelivery2.Models.Address>;
+    var drivers = ViewBag.Drivers as List<WebDelivery2.Models.Driver>;
+}
+
+<h1>Admin Panel</h1>
+<div class="table-responsive">
+    <table class="table orders-table">
+    <thead>
+        <tr>
+            <th>Адрес сбора</th>
+            <th>Адрес доставки</th>
+            <th>Дата заказа</th>
+            <th>Статус</th>
+            <th>Описание</th>
+            <th>Цена</th>
+            <th>Водитель</th>
+            <th>Принять заказ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (orders != null && addresses != null)
+        {
+            foreach (var order in orders)
+            {
+                var pickupAddress = addresses.FirstOrDefault(a => a.Id == order.PickupaddressId);
+                var deliveryAddress = addresses.FirstOrDefault(a => a.Id == order.DeliveryaddressId);
+                var driver = drivers.FirstOrDefault(d => d.Id == order.DriverId);
+
+                <tr>
+                    <td data-label="Адрес сбора">
+                        @if (pickupAddress != null)
+                        {
+                            @($"{pickupAddress.Country}, {pickupAddress.City}, {pickupAddress.Street}, {pickupAddress.House}")
+                        }
+                        else
+                        {
+                            <span>Не указан</span>
+                        }
+                    </td>
+                    <td data-label="Адрес доставки">
+                        @if (deliveryAddress != null)
+                        {
+                            @($"{deliveryAddress.Country}, {deliveryAddress.City}, {deliveryAddress.Street}, {deliveryAddress.House}")
+                        }
+                        else
+                        {
+                            <span>Не указан</span>
+                        }
+                    </td>
+                    <td data-label="Дата заказа">@order.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td data-label="Статус">
+                        @switch (order.Status)
+                        {
+                            case OrderStatus.pending:
+                                <span>Отправлен</span>
+                                ;
+                                break;
+                            case OrderStatus.intransit:
+                                <span>Принят</span>
+                                ;
+                                break;
+                            case OrderStatus.delivered:
+                                <span>Доставлен</span>
+                                ;
+                                break;
+                            default:
+                                <span>Неизвестен</span>
+                                ;
+                                break;
+                        }
+                    </td>
+                    <td data-label="Описание">@order.Description ?? "Нет описания"</td>
+                    <td data-label="Цена">@($"{order.Price:F2} руб.")</td>
+                    <td data-label="Водитель">
+                        @if (driver != null)
+                        {
+                            @($"{driver.Firstname} {driver.Lastname}")
+                        }
+                        else
+                        {
+                            <span>Не назначен</span>
+                        }
+                    </td>
+                    <td data-label="Принять заказ">
+                        @if (order.Status == OrderStatus.delivered)
+                        {
+                            <form asp-action="AcceptOrder" method="post">
+                                <input type="hidden" name="id" value="@order.Id" />
+                                <input type="hidden" name="customerId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-primary">Принять заказ</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span>Дождитесь выполнения</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="8">Заказов нет</td></tr>
+        }
+    </tbody>
+</table>
+</div>

@@ -1,11 +1,12 @@
 ﻿using WebDelivery2.Models;
 using WebDelivery2.Extensions;
+using System.Diagnostics.Metrics;
 
 namespace WebDelivery2.Extensions
 {
     public class OrderExtensions
     {
-        public static void CreateOrder(Order model, int Customerid, string DeliveryType, Address modelA, decimal Price)
+        public static void CreateOrder(Order model, int Customerid, string DeliveryType, Address modelA, decimal Price, float Weight)
         {
             using (DeliveryContext context = new DeliveryContext())
             {
@@ -41,6 +42,7 @@ namespace WebDelivery2.Extensions
                     Description = model.Description,
                     PickupaddressId = pickupAddressId,
                     DeliveryaddressId = deliveryAddressId,
+                    Weight = Weight,
                     Price = Price
                 };
 
@@ -88,35 +90,6 @@ namespace WebDelivery2.Extensions
                     context.SaveChanges();
                 }
             }
-        }
-
-        public static void Count(int id)
-        {
-            
-            using (DeliveryContext context = new DeliveryContext())
-            {
-                var order = context.Orders.FirstOrDefault(o => o.Id == id);
-                if (order != null)
-                {
-                    if (order.Pickupaddress.Country != order.Deliveryaddress.Country)
-                    {
-                        order.Price = 200;
-                    }
-                    else if (order.Pickupaddress.City != order.Deliveryaddress.City)
-                    {
-                        order.Price = 100;
-                    }
-                    else if (order.Pickupaddress.Street != order.Deliveryaddress.Street)
-                    {
-                        order.Price = 50;
-                    }
-                    else
-                    {
-                        order.Price = 20;
-                    }
-                }
-            }
-            
         }
     }
 }

@@ -85,8 +85,22 @@ namespace WebDelivery2.Controllers
                     return View("ProfileDriver", driver);
                 }
 
+                if (model.Email == "admin@gmail.com" && model.Password == "admin")
+                {
+                    LoadViewData(context);
+                    return View("Admin");
+                }
+
                 ViewBag.ErrorMessage = "Invalid email or password";
                 return View("Index");
+            }
+        }
+
+        public IActionResult Admin()
+        {
+            using (DeliveryContext context = new DeliveryContext())
+            {
+                return View("Admin");
             }
         }
 

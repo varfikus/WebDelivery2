@@ -145,6 +145,10 @@ public partial class DeliveryContext : DbContext
             entity.Property(e => e.Status)
                 .HasColumnName("status")
                 .HasColumnType("text");
+            entity.Property(e => e.Weight)
+                .HasPrecision(10, 2)
+                .HasColumnName("weight");
+            
 
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)

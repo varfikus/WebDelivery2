@@ -18,10 +18,13 @@
         <input type="hidden" name="DeliveryType" id="DeliveryType" value="To" />
 
         <p>
-            <label>Описание:</label><br />
-            <input type="text" name="Description" id="Description" />
+            <label>Описание:</label><br/>
+            <input type="text" name="Description" id="Description"/>
         </p>
-
+        <p>
+            <label>Вес посылки:</label><br/>
+            <input type="number" name="Weight" id="Weight" min="0.1" step="0.1" required onchange="calculatePrice()" />
+        </p>
         <div id="addressFields">
             <p>
                 <label>Страна:</label><br />
@@ -69,13 +72,25 @@
         }
     }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const fields = ["Country", "City", "Street", "House", "Weight"];
+
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            if (element) {
+                element.addEventListener("input", calculatePrice);
+            }
+        });
+    });
+
     function areAllFieldsFilled() {
         var country = document.getElementById("Country").value;
         var city = document.getElementById("City").value;
         var street = document.getElementById("Street").value;
         var house = document.getElementById("House").value;
+        var weight = document.getElementById("Weight").value;
 
-        return country && city && street && house;
+        return country && city && street && house && weight;
     }
 
     async function calculatePrice() {
@@ -86,12 +101,13 @@
             var country = document.getElementById("Country").value;
             var city = document.getElementById("City").value;
             var street = document.getElementById("Street").value;
+            var weight = document.getElementById("Weight").value;
             var customerId = document.querySelector('input[name="CustomerId"]').value;
 
-            console.log(`Country: ${country}, City: ${city}, Street: ${street}, CustomerId: ${customerId}`);
+            console.log(`Country: ${country}, City: ${city}, Street: ${street}, Weight: ${weight}, CustomerId: ${customerId}`);
 
             try {
-                const response = await fetch(`/Order/CalculatePrice?country=${country}&city=${city}&street=${street}&customerId=${customerId}`);
+                const response = await fetch(`/Order/CalculatePrice?country=${country}&city=${city}&street=${street}&weight=${weight}&customerId=${customerId}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -105,6 +121,7 @@
             }
         }
     }
+
 
     document.addEventListener('DOMContentLoaded', function () {
         toggleDeliveryType('To');

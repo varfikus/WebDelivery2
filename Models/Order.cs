@@ -25,6 +25,8 @@ public partial class Order
 
     public string Status { get; set; }
 
+    public float Weight { get; set; }   
+
     public virtual Customer Customer { get; set; }
 
     public virtual Address Deliveryaddress { get; set; }
